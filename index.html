@@ -13,26 +13,37 @@
       --muted:#cfd3ff;
       --accent:#ff4fd8;
       --accent2:#7c5cff;
+      --ring:#ffffff55;
     }
     *{box-sizing:border-box}
+
+    /* ✅ iPhone-friendly scrolling + dynamic viewport */
     body{
       margin:0;
-      min-height:100vh;
+      min-height:100vh;       /* fallback */
+      min-height:100dvh;      /* iOS dynamic viewport */
       display:flex;
       align-items:center;
       justify-content:center;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       color:var(--text);
-      background: radial-gradient(1000px 600px at 20% 10%, #2a2d66 0%, transparent 60%),
-                  radial-gradient(900px 700px at 80% 20%, #5a2a74 0%, transparent 55%),
-                  linear-gradient(135deg, var(--bg1), var(--bg2));
-      overflow:hidden;
+      background:
+        radial-gradient(1000px 600px at 20% 10%, color-mix(in oklab, var(--accent2) 40%, transparent) 0%, transparent 60%),
+        radial-gradient(900px 700px at 80% 20%, color-mix(in oklab, var(--accent) 40%, transparent) 0%, transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+      overflow-y:auto;
+      -webkit-overflow-scrolling: touch;
       padding:24px;
+    }
+    @media (max-height: 700px){
+      body{ align-items:flex-start; }
     }
 
     .wrap{
-      width:min(760px, 100%);
+      width:min(820px, 100%);
       position:relative;
+      margin: 12px 0;
     }
 
     .card{
@@ -44,6 +55,14 @@
       box-shadow: 0 20px 60px #00000055;
       position:relative;
       overflow:hidden;
+    }
+
+    .toprow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
     }
 
     .badge{
@@ -58,6 +77,20 @@
       font-size: 14px;
       letter-spacing:.2px;
     }
+
+    .timebox{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius: 999px;
+      background: #ffffff10;
+      border:1px solid #ffffff1f;
+      color: var(--muted);
+      font-size: 14px;
+      white-space:nowrap;
+    }
+    .timebox strong{ color: var(--text); font-weight: 700; }
 
     h1{
       margin:18px 0 6px;
@@ -84,7 +117,7 @@
       gap: 18px;
       margin-top: 18px;
     }
-    @media (max-width: 700px){
+    @media (max-width: 760px){
       .grid{grid-template-columns:1fr}
     }
 
@@ -101,14 +134,15 @@
       gap:10px;
       margin-top: 14px;
     }
+
     button{
       cursor:pointer;
       border:0;
       border-radius: 14px;
       padding: 12px 14px;
-      font-weight: 650;
+      font-weight: 700;
       color: #0f1020;
-      background: linear-gradient(90deg, #ff4fd8, #ffd36e);
+      background: linear-gradient(90deg, var(--accent), #ffd36e);
       box-shadow: 0 10px 25px #00000035;
       transition: transform .08s ease;
     }
@@ -117,6 +151,8 @@
       background:#ffffff18;
       color: var(--text);
       border:1px solid #ffffff2a;
+      box-shadow:none;
+      font-weight: 650;
     }
 
     .footer{
@@ -126,13 +162,55 @@
       opacity:.9;
     }
 
+    .hint{
+      font-size: 13px;
+      color:#cfd3ff;
+      opacity:.9;
+      margin: 0 0 6px;
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    label{
+      font-size: 13px;
+      color:#cfd3ff;
+      opacity:.9;
+    }
+
+    input, select{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 12px;
+      border:1px solid #ffffff2a;
+      background:#0f102040;
+      color: var(--text);
+      outline:none;
+      appearance:none;
+    }
+    input::placeholder{color:#cfd3ff99}
+
+    .row2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 520px){
+      .row2{ grid-template-columns: 1fr; }
+    }
+
+    .small{font-size:13px; opacity:.9}
+
     /* Floating hearts */
     .heart{
       position:absolute;
       width: 14px;
       height: 14px;
       transform: rotate(45deg);
-      background: #ff4fd8;
+      background: var(--accent);
       opacity:.8;
       animation: floatUp 6s linear infinite;
       border-radius: 3px;
@@ -161,23 +239,18 @@
       pointer-events:none;
     }
 
-    .hint{
-      font-size: 13px;
-      color:#cfd3ff;
-      opacity:.85;
+    /* Focus styles for accessibility */
+    button:focus-visible, input:focus-visible, select:focus-visible{
+      outline: 3px solid var(--ring);
+      outline-offset: 2px;
     }
 
-    input{
-      width:100%;
-      padding:12px 12px;
-      border-radius: 12px;
-      border:1px solid #ffffff2a;
-      background:#0f102040;
-      color: var(--text);
-      outline:none;
+    /* Respect Reduce Motion */
+    @media (prefers-reduced-motion: reduce){
+      .heart{ display:none; }
+      canvas{ display:none; }
+      *{ scroll-behavior:auto !important; transition:none !important; }
     }
-    input::placeholder{color:#cfd3ff99}
-    .small{font-size:13px; opacity:.9}
   </style>
 </head>
 
@@ -186,7 +259,12 @@
 
 <div class="wrap">
   <div class="card">
-    <div class="badge">🎂 Free birthday card site • made with love</div>
+    <div class="toprow">
+      <div class="badge">🎂 Free birthday card site • made with love</div>
+      <div class="timebox" aria-live="polite">
+        🕒 Eastern time: <strong id="etTime">--:--</strong>
+      </div>
+    </div>
 
     <h1>Happy Birthday, <span class="name" id="toName">Friend</span>!</h1>
     <p id="message">
@@ -195,19 +273,52 @@
 
     <div class="grid">
       <div class="panel">
-        <p class="hint"><strong>Make it personal:</strong> type their name + a short note, then press “Update”.</p>
-        <div style="display:grid; gap:10px; margin-top:10px;">
-          <input id="nameInput" placeholder="Their name (e.g., Sara)" />
-          <input id="msgInput" placeholder="Your message (e.g., I'm proud of you 💛)" />
+        <p class="hint"><strong>Make it personal:</strong> fill in the info below, then press “Update”.</p>
+
+        <div class="field">
+          <label for="themeSelect">Card color / theme</label>
+          <select id="themeSelect">
+            <option value="pink">Pink Glow</option>
+            <option value="blue">Ocean Blue</option>
+            <option value="purple">Purple Night</option>
+            <option value="green">Mint Dream</option>
+            <option value="gold">Golden Warmth</option>
+            <option value="red">Rose Red</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="nameInput">Their name</label>
+          <input id="nameInput" autocomplete="off" placeholder="e.g., Sara" />
+        </div>
+
+        <div class="field">
+          <label for="msgInput">Your message</label>
+          <input id="msgInput" autocomplete="off" placeholder="e.g., I’m proud of you 💛" />
+        </div>
+
+        <div class="row2" style="margin-top:10px;">
+          <div class="field" style="margin-top:0;">
+            <label for="emailInput">Recipient email (optional)</label>
+            <input id="emailInput" type="email" inputmode="email" placeholder="e.g., sara@gmail.com" />
+          </div>
+          <div class="field" style="margin-top:0;">
+            <label for="phoneInput">Recipient phone (optional)</label>
+            <input id="phoneInput" type="tel" inputmode="tel" placeholder="e.g., 5551234567" />
+          </div>
         </div>
 
         <div class="btns">
           <button id="updateBtn">Update</button>
           <button class="ghost" id="confettiBtn">Celebrate 🎉</button>
           <button class="ghost" id="copyBtn">Copy Link 🔗</button>
+          <button class="ghost" id="emailBtn">Send via Email ✉️</button>
+          <button class="ghost" id="textBtn">Send via Text 💬</button>
         </div>
 
-        <div class="footer" id="status">Tip: after you update, copy the link and text it to them.</div>
+        <div class="footer" id="status">
+          Tip: Update → Copy Link → send it. (Email/Text buttons open your apps with everything filled in.)
+        </div>
       </div>
 
       <div class="panel">
@@ -223,34 +334,109 @@
 </div>
 
 <script>
-  // --- Shareable link logic (uses URL parameters) ---
+  // ---------- THEME SYSTEM ----------
+  const THEMES = {
+    pink:   { bg1:"#0f1020", bg2:"#1b1f3a", card:"#ffffff10", accent:"#ff4fd8", accent2:"#7c5cff", ring:"#ffffff55" },
+    blue:   { bg1:"#06101f", bg2:"#0a2b4a", card:"#ffffff10", accent:"#52b6ff", accent2:"#2b6cff", ring:"#bfe7ff88" },
+    purple: { bg1:"#0d0a1f", bg2:"#23114a", card:"#ffffff10", accent:"#b86bff", accent2:"#5c7cff", ring:"#e3c6ff66" },
+    green:  { bg1:"#061a16", bg2:"#0b3a2f", card:"#ffffff10", accent:"#35f2b5", accent2:"#2fd4ff", ring:"#bfffe688" },
+    gold:   { bg1:"#1a1206", bg2:"#3a250b", card:"#ffffff10", accent:"#ffd36e", accent2:"#ff7c4f", ring:"#ffe6aa77" },
+    red:    { bg1:"#1a0810", bg2:"#3a0b1b", card:"#ffffff10", accent:"#ff5a6a", accent2:"#ff9a4f", ring:"#ffd0d088" }
+  };
+
+  function applyTheme(key){
+    const t = THEMES[key] || THEMES.pink;
+    const r = document.documentElement.style;
+    r.setProperty("--bg1", t.bg1);
+    r.setProperty("--bg2", t.bg2);
+    r.setProperty("--card", t.card);
+    r.setProperty("--accent", t.accent);
+    r.setProperty("--accent2", t.accent2);
+    r.setProperty("--ring", t.ring);
+  }
+
+  // ---------- ELEMENTS ----------
   const toName = document.getElementById("toName");
   const message = document.getElementById("message");
   const statusEl = document.getElementById("status");
 
+  const themeSelect = document.getElementById("themeSelect");
   const nameInput = document.getElementById("nameInput");
-  const msgInput = document.getElementById("msgInput");
+  const msgInput  = document.getElementById("msgInput");
+  const emailInput = document.getElementById("emailInput");
+  const phoneInput = document.getElementById("phoneInput");
 
+  // ---------- SHAREABLE LINK (URL PARAMS) ----------
   const params = new URLSearchParams(location.search);
+
+  // Params supported: to, msg, theme
   const initialName = params.get("to");
   const initialMsg  = params.get("msg");
+  const initialTheme = params.get("theme");
 
+  // ---------- DRAFT SAVE (localStorage) ----------
+  const DRAFT_KEY = "birthday_card_draft_v2";
+  const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+
+  // Theme priority: URL > saved > default
+  const themeToUse = initialTheme || saved?.theme || "pink";
+  themeSelect.value = themeToUse;
+  applyTheme(themeToUse);
+
+  // Name/message priority: URL > saved > defaults
   if (initialName) toName.textContent = initialName;
-  if (initialMsg)  message.textContent = initialMsg;
+  else if (saved?.to) toName.textContent = saved.to;
+
+  if (initialMsg) message.textContent = initialMsg;
+  else if (saved?.msg) message.textContent = saved.msg;
+
+  // Inputs start values
+  nameInput.value = initialName || saved?.to || "";
+  msgInput.value  = initialMsg || saved?.msg || "";
+  emailInput.value = saved?.email || "";
+  phoneInput.value = saved?.phone || "";
+
+  function saveDraft(){
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      theme: themeSelect.value,
+      to: nameInput.value.trim(),
+      msg: msgInput.value.trim(),
+      email: emailInput.value.trim(),
+      phone: phoneInput.value.trim()
+    }));
+  }
+
+  nameInput.addEventListener("input", saveDraft);
+  msgInput.addEventListener("input", saveDraft);
+  emailInput.addEventListener("input", saveDraft);
+  phoneInput.addEventListener("input", saveDraft);
+
+  themeSelect.addEventListener("change", () => {
+    applyTheme(themeSelect.value);
+    saveDraft();
+    // update URL theme (so it shares nicely)
+    params.set("theme", themeSelect.value);
+    history.replaceState({}, "", location.origin + location.pathname + "?" + params.toString());
+    statusEl.textContent = "Theme updated ✨";
+  });
 
   document.getElementById("updateBtn").addEventListener("click", () => {
     const n = nameInput.value.trim() || "Friend";
     const m = msgInput.value.trim() || message.textContent.trim();
+    const th = themeSelect.value || "pink";
 
     toName.textContent = n;
     message.textContent = m;
 
     params.set("to", n);
     params.set("msg", m);
+    params.set("theme", th);
+
     const newUrl = location.origin + location.pathname + "?" + params.toString();
     history.replaceState({}, "", newUrl);
 
-    statusEl.textContent = "Updated! Now press “Copy Link” and send it ✨";
+    saveDraft();
+    statusEl.textContent = "Updated! Now press “Copy Link” (or Email/Text) and send it ✅";
   });
 
   document.getElementById("copyBtn").addEventListener("click", async () => {
@@ -262,21 +448,48 @@
     }
   });
 
-  // --- Floating hearts ---
+  // ---------- EMAIL + TEXT (opens apps with prefilled content) ----------
+  function buildCardText() {
+    const n = (toName.textContent || "Friend").trim();
+    const m = (message.textContent || "").trim();
+    const link = location.href;
+    return `Happy Birthday, ${n}!\n\n${m}\n\nOpen your card here:\n${link}`;
+  }
+
+  document.getElementById("emailBtn").addEventListener("click", () => {
+    const to = (emailInput.value || "").trim();
+    const subject = encodeURIComponent(`Happy Birthday, ${toName.textContent || "Friend"}! 🎂`);
+    const body = encodeURIComponent(buildCardText());
+    window.location.href = `mailto:${encodeURIComponent(to)}?subject=${subject}&body=${body}`;
+    statusEl.textContent = "Opening your email app… ✉️";
+  });
+
+  document.getElementById("textBtn").addEventListener("click", () => {
+    const numRaw = (phoneInput.value || "").trim();
+    const num = numRaw.replace(/[^\d+]/g, "");
+    const body = encodeURIComponent(buildCardText());
+
+    // iPhone commonly supports sms:number&body=...
+    // If some devices prefer ?body=, they still usually handle &body too.
+    window.location.href = `sms:${encodeURIComponent(num)}&body=${body}`;
+    statusEl.textContent = "Opening your messages app… 💬";
+  });
+
+  // ---------- FLOATING HEARTS ----------
   function spawnHeart(){
     const h = document.createElement("div");
     h.className = "heart";
     h.style.left = Math.random() * 100 + "vw";
     h.style.bottom = "-30px";
     h.style.animationDuration = (4 + Math.random()*4) + "s";
-    h.style.opacity = 0.5 + Math.random()*0.5;
+    h.style.opacity = 0.45 + Math.random()*0.5;
     h.style.transform = "rotate(45deg) scale(" + (0.7 + Math.random()*1.2) + ")";
     document.body.appendChild(h);
     setTimeout(()=>h.remove(), 8000);
   }
-  setInterval(spawnHeart, 450);
+  setInterval(spawnHeart, 520);
 
-  // --- Simple confetti ---
+  // ---------- CONFETTI ----------
   const canvas = document.getElementById("confetti");
   const ctx = canvas.getContext("2d");
   function resize(){
@@ -289,7 +502,7 @@
   let pieces = [];
   function blastConfetti(){
     pieces = [];
-    const count = 180;
+    const count = 190;
     for(let i=0;i<count;i++){
       pieces.push({
         x: innerWidth/2,
@@ -327,6 +540,23 @@
     blastConfetti();
     statusEl.textContent = "Wooo!! 🎉";
   });
+
+  // ---------- EASTERN TIME (Northeastern US) ----------
+  const etEl = document.getElementById("etTime");
+  function updateEasternTime(){
+    const d = new Date();
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      weekday: "short",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    });
+    etEl.textContent = fmt.format(d);
+  }
+  updateEasternTime();
+  setInterval(updateEasternTime, 1000 * 20); // update every 20s
 </script>
 </body>
 </html>
+
