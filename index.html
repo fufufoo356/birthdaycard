@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday!</title>
+  <style>
+    :root{
+      --bg1:#0f1020;
+      --bg2:#1b1f3a;
+      --card:#ffffff10;
+      --text:#f7f7ff;
+      --muted:#cfd3ff;
+      --accent:#ff4fd8;
+      --accent2:#7c5cff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color:var(--text);
+      background: radial-gradient(1000px 600px at 20% 10%, #2a2d66 0%, transparent 60%),
+                  radial-gradient(900px 700px at 80% 20%, #5a2a74 0%, transparent 55%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+      padding:24px;
+    }
+
+    .wrap{
+      width:min(760px, 100%);
+      position:relative;
+    }
+
+    .card{
+      backdrop-filter: blur(10px);
+      background: var(--card);
+      border: 1px solid #ffffff25;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 20px 60px #00000055;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .badge{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      padding:10px 14px;
+      border-radius: 999px;
+      background: #ffffff14;
+      border:1px solid #ffffff22;
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing:.2px;
+    }
+
+    h1{
+      margin:18px 0 6px;
+      font-size: clamp(34px, 5vw, 54px);
+      line-height:1.05;
+    }
+    .name{
+      background: linear-gradient(90deg, var(--accent), #ffd36e, var(--accent2));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color: transparent;
+    }
+
+    p{
+      margin: 10px 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    @media (max-width: 700px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    .panel{
+      border-radius: 18px;
+      padding: 16px;
+      background:#ffffff10;
+      border:1px solid #ffffff1f;
+    }
+
+    .btns{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top: 14px;
+    }
+    button{
+      cursor:pointer;
+      border:0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 650;
+      color: #0f1020;
+      background: linear-gradient(90deg, #ff4fd8, #ffd36e);
+      box-shadow: 0 10px 25px #00000035;
+      transition: transform .08s ease;
+    }
+    button:active{transform: translateY(1px) scale(.99)}
+    .ghost{
+      background:#ffffff18;
+      color: var(--text);
+      border:1px solid #ffffff2a;
+    }
+
+    .footer{
+      margin-top: 14px;
+      font-size: 13px;
+      color:#b9beff;
+      opacity:.9;
+    }
+
+    /* Floating hearts */
+    .heart{
+      position:absolute;
+      width: 14px;
+      height: 14px;
+      transform: rotate(45deg);
+      background: #ff4fd8;
+      opacity:.8;
+      animation: floatUp 6s linear infinite;
+      border-radius: 3px;
+    }
+    .heart::before, .heart::after{
+      content:"";
+      position:absolute;
+      width: 14px;
+      height: 14px;
+      background: inherit;
+      border-radius: 50%;
+    }
+    .heart::before{left:-7px; top:0}
+    .heart::after{left:0; top:-7px}
+
+    @keyframes floatUp{
+      from{ transform: translateY(40px) rotate(45deg); opacity:0}
+      10%{opacity:.8}
+      to{ transform: translateY(-820px) rotate(45deg); opacity:0}
+    }
+
+    /* Confetti canvas overlay */
+    canvas{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+    }
+
+    .hint{
+      font-size: 13px;
+      color:#cfd3ff;
+      opacity:.85;
+    }
+
+    input{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 12px;
+      border:1px solid #ffffff2a;
+      background:#0f102040;
+      color: var(--text);
+      outline:none;
+    }
+    input::placeholder{color:#cfd3ff99}
+    .small{font-size:13px; opacity:.9}
+  </style>
+</head>
+
+<body>
+<canvas id="confetti"></canvas>
+
+<div class="wrap">
+  <div class="card">
+    <div class="badge">🎂 Free birthday card site • made with love</div>
+
+    <h1>Happy Birthday, <span class="name" id="toName">Friend</span>!</h1>
+    <p id="message">
+      I hope today feels a little lighter. You deserve good things, soft moments, and people who show up for you.
+    </p>
+
+    <div class="grid">
+      <div class="panel">
+        <p class="hint"><strong>Make it personal:</strong> type their name + a short note, then press “Update”.</p>
+        <div style="display:grid; gap:10px; margin-top:10px;">
+          <input id="nameInput" placeholder="Their name (e.g., Sara)" />
+          <input id="msgInput" placeholder="Your message (e.g., I'm proud of you 💛)" />
+        </div>
+
+        <div class="btns">
+          <button id="updateBtn">Update</button>
+          <button class="ghost" id="confettiBtn">Celebrate 🎉</button>
+          <button class="ghost" id="copyBtn">Copy Link 🔗</button>
+        </div>
+
+        <div class="footer" id="status">Tip: after you update, copy the link and text it to them.</div>
+      </div>
+
+      <div class="panel">
+        <p><strong>Little reminder:</strong></p>
+        <p class="small">
+          A birthday card doesn’t have to cost money to mean something.
+          A link + a message can make someone feel seen.
+        </p>
+        <p class="small">— from you 💗</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- Shareable link logic (uses URL parameters) ---
+  const toName = document.getElementById("toName");
+  const message = document.getElementById("message");
+  const statusEl = document.getElementById("status");
+
+  const nameInput = document.getElementById("nameInput");
+  const msgInput = document.getElementById("msgInput");
+
+  const params = new URLSearchParams(location.search);
+  const initialName = params.get("to");
+  const initialMsg  = params.get("msg");
+
+  if (initialName) toName.textContent = initialName;
+  if (initialMsg)  message.textContent = initialMsg;
+
+  document.getElementById("updateBtn").addEventListener("click", () => {
+    const n = nameInput.value.trim() || "Friend";
+    const m = msgInput.value.trim() || message.textContent.trim();
+
+    toName.textContent = n;
+    message.textContent = m;
+
+    params.set("to", n);
+    params.set("msg", m);
+    const newUrl = location.origin + location.pathname + "?" + params.toString();
+    history.replaceState({}, "", newUrl);
+
+    statusEl.textContent = "Updated! Now press “Copy Link” and send it ✨";
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    try{
+      await navigator.clipboard.writeText(location.href);
+      statusEl.textContent = "Link copied ✅ Paste it in a text message!";
+    }catch(e){
+      statusEl.textContent = "Couldn’t auto-copy. Manually copy from the address bar.";
+    }
+  });
+
+  // --- Floating hearts ---
+  function spawnHeart(){
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.bottom = "-30px";
+    h.style.animationDuration = (4 + Math.random()*4) + "s";
+    h.style.opacity = 0.5 + Math.random()*0.5;
+    h.style.transform = "rotate(45deg) scale(" + (0.7 + Math.random()*1.2) + ")";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(), 8000);
+  }
+  setInterval(spawnHeart, 450);
+
+  // --- Simple confetti ---
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  function resize(){
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+  }
+  addEventListener("resize", resize);
+  resize();
+
+  let pieces = [];
+  function blastConfetti(){
+    pieces = [];
+    const count = 180;
+    for(let i=0;i<count;i++){
+      pieces.push({
+        x: innerWidth/2,
+        y: innerHeight/2,
+        vx: (Math.random()-0.5)*16,
+        vy: (Math.random()-0.8)*18,
+        g: 0.22 + Math.random()*0.08,
+        s: 3 + Math.random()*5,
+        r: Math.random()*Math.PI
+      });
+    }
+  }
+
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(const p of pieces){
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.r += 0.1;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.fillStyle = `hsl(${(p.x+p.y)%360}, 90%, 65%)`;
+      ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s);
+      ctx.restore();
+    }
+    pieces = pieces.filter(p => p.y < innerHeight + 40);
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  document.getElementById("confettiBtn").addEventListener("click", () => {
+    blastConfetti();
+    statusEl.textContent = "Wooo!! 🎉";
+  });
+</script>
+</body>
+</html>
